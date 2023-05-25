@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Conversor de imagens para PNG ou PDF</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <h1>Conversor de imagens para PNG ou PDF</h1>
+    <p>Selecione os arquivos de imagem que deseja converter:</p>
+    <div>
+      <label for="file-input"></label>
+      <input type="file" id="file-input" multiple accept="image/*">
+      <label for="file-type">Tipo:</label>
+      <select id="file-type">
+        <option value="png">PNG</option>
+        <option value="pdf">PDF</option>
+      </select>
+      <button onclick="convertImages()">Converter</button>
+    </div>
+    <output id="status"></output>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-image: url('https://genshin.global/wp-content/uploads/2017/06/eula-cryo-genshin-impact-1-1300x796.webp');
+  background-size: cover;
+  min-height: 100vh;
+
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  h1 {
+    font-size: 24px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  input[type=file] {
+    margin-bottom: 10px;
+  }
+  
+  select {
+    margin-right: 10px;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  output {
+    display: block;
+    margin-top: 20px;
+  }
+ 
+
+/* Define as propriedades do botão */
+button {
+  display: block;
+  margin: 10px auto;
+  padding: 10px 20px;
+  background-color: #333;
+  color: #34d1df;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out; /* adiciona uma transição ao botão quando tiver */
+}
+
+button:hover {
+  background-color: #444;
+}
+
+/* Define as propriedades de alguma coisa sei la  */
+input[type="file"] {
+  display: block;
+  margin: 10px auto;
+}
+
+/* Define as propriedades de algo ai... */
+#status {
+  text-align: center;
+  font-weight: bold;
+  color: #f8f8f8;
+}
+function convertImages() {
+  const fileInput = document.getElementById('file-input');
+  const files = fileInput.files;
+
+  if (files.length === 0) {
+    document.getElementById('status').textContent = 'Selecione pelo menos um arquivo.';
+    return;
+  }
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+      const img = new Image();
+
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+
+        const dataURL = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = file.name.replace(/\.[^/.]+$/, "") + '.png';
+        link.href = dataURL;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+
+      img.src = e.target.result;
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  document.getElementById('status').textContent = `Convertendo ${files.length} arquivos...`;
+}
